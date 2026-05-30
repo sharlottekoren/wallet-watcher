@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"encoding/json"
+
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/handlers"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/services"
 )
