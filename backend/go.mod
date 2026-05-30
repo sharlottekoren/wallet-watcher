@@ -1,3 +1,5 @@
-module github.com/sharlottekoren/wallet-watcher
+module github.com/sharlottekoren/wallet-watcher/backend
 
 go 1.26.3
+
+require github.com/google/uuid v1.6.0
