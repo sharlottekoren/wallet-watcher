@@ -6,18 +6,41 @@ import (
 
 	"github.com/sharlottekoren/wallet-watcher/internal/handlers"
 	"github.com/sharlottekoren/wallet-watcher/internal/services"
+
+	"github.com/rs/cors"
 )
 
 func main() {
-	// Initialize the TransactionService
-	txService := services.NewTransactionService()
-	// Create a new TransactionHandler with the TransactionService
-	txHandler := handlers.NewTransactionHandler(txService)
+	// Initialize the transaction service and handler
+	transactionService := services.NewTransactionService()
+	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
-	// Set up the HTTP route for transactions and associate it with the TransactionHandler
-	http.HandleFunc("/transactions", txHandler.HandleTransactions)
+	// Set up the HTTP server and routes
+	mux := http.NewServeMux()
+	mux.HandleFunc("/transactions", transactionHandler.HandleTransactions)
 
-	// Start the HTTP server on port 8080 and log any errors that occur
+	// Set up CORS options
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{
+			"http://localhost:5173",
+		},
+		AllowedMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+			"OPTIONS",
+		},
+		AllowedHeaders: []string{
+			"Content-Type",
+			"Authorization",
+		},
+	})
+
+	// Wrap the HTTP handler with CORS middleware
+	handler := c.Handler(mux)
+
+	// Start the HTTP server with CORS enabled
 	log.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
