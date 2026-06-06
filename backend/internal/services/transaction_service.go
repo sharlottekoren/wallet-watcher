@@ -1,10 +1,10 @@
 package services
 
 import (
-	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
-	"github.com/google/uuid"
-	"time"
 	"errors"
+	"github.com/google/uuid"
+	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+	"time"
 )
 
 type TransactionService struct {

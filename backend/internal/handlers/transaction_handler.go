@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/services"
@@ -22,7 +22,7 @@ func NewTransactionHandler(service *services.TransactionService) *TransactionHan
 // CreateTransactionHandler handles the creation of a new transaction.
 func (h *TransactionHandler) CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	var transaction models.Transaction
 
 	err := json.NewDecoder(r.Body).Decode(&transaction)

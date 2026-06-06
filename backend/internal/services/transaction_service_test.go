@@ -1,8 +1,8 @@
 package services
 
 import (
-	"testing"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+	"testing"
 )
 
 func TestCreateTransaction(t *testing.T) {
@@ -51,7 +51,7 @@ func TestGetTransactions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
-	
+
 	transactions := service.GetTransactions()
 
 	if len(transactions) != 2 {
