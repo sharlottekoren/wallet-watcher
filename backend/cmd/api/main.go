@@ -22,9 +22,12 @@ func main() {
 			transactionHandler.GetTransactionsHandler(w, r)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
-			json.NewEncoder(w).Encode(map[string]string{
+			err := json.NewEncoder(w).Encode(map[string]string{
 				"error": "Method not allowed",
 			})
+			if err != nil {
+				http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+			}
 		}
 	})
 
