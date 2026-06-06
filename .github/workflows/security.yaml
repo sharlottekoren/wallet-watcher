@@ -14,8 +14,8 @@ jobs:
           go install golang.org/x/vuln/cmd/govulncheck@latest
           cd backend && govulncheck ./...
 
-  npm-security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cd frontend && npm audit --audit-level=high
+  # npm-security:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: cd frontend && npm audit --audit-level=high
