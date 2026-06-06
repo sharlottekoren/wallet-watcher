@@ -43,8 +43,15 @@ func TestGetTransactions(t *testing.T) {
 		Description: "Test transaction 2",
 	}
 
-	service.CreateTransaction(transaction1)
-	service.CreateTransaction(transaction2)
+	_, err := service.CreateTransaction(transaction1)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+	_, err = service.CreateTransaction(transaction2)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+	
 	transactions := service.GetTransactions()
 
 	if len(transactions) != 2 {
