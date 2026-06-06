@@ -1,0 +1,91 @@
+package services
+
+import (
+	"testing"
+	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+)
+
+func TestCreateTransaction(t *testing.T) {
+	service := NewTransactionService()
+	transaction := models.Transaction{
+		Amount:      100.0,
+		Description: "Test transaction",
+	}
+
+	createdTransaction, err := service.CreateTransaction(transaction)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+	if createdTransaction.ID == "" {
+		t.Errorf("Expected transaction ID to be set, got empty string")
+	}
+	if createdTransaction.UserID != "user123" {
+		t.Errorf("Expected UserID to be 'user123', got %s", createdTransaction.UserID)
+	}
+	if createdTransaction.Amount != transaction.Amount {
+		t.Errorf("Expected Amount to be %f, got %f", transaction.Amount, createdTransaction.Amount)
+	}
+	if createdTransaction.Description != transaction.Description {
+		t.Errorf("Expected Description to be '%s', got '%s'", transaction.Description, createdTransaction.Description)
+	}
+}
+
+func TestGetTransactions(t *testing.T) {
+	service := NewTransactionService()
+
+	transaction1 := models.Transaction{
+		Amount:      100.0,
+		Description: "Test transaction 1",
+	}
+
+	transaction2 := models.Transaction{
+		Amount:      200.0,
+		Description: "Test transaction 2",
+	}
+
+	service.CreateTransaction(transaction1)
+	service.CreateTransaction(transaction2)
+	transactions := service.GetTransactions()
+
+	if len(transactions) != 2 {
+		t.Fatalf("Expected 2 transactions, got %d", len(transactions))
+	}
+	if transactions[0].Description != transaction1.Description {
+		t.Errorf("Expected first transaction description to be '%s', got '%s'", transaction1.Description, transactions[0].Description)
+	}
+	if transactions[1].Description != transaction2.Description {
+		t.Errorf("Expected second transaction description to be '%s', got '%s'", transaction2.Description, transactions[1].Description)
+	}
+}
+
+func TestCreateTransactionInvalidAmount(t *testing.T) {
+	service := NewTransactionService()
+	transaction := models.Transaction{
+		Amount:      -50.0,
+		Description: "Invalid transaction",
+	}
+
+	_, err := service.CreateTransaction(transaction)
+	if err == nil {
+		t.Fatal("Expected error for invalid amount, got nil")
+	}
+	if err.Error() != "amount must be greater than zero" {
+		t.Errorf("Expected error message 'amount must be greater than zero', got '%s'", err.Error())
+	}
+}
+
+func TestCreateTransactionEmptyDescription(t *testing.T) {
+	service := NewTransactionService()
+	transaction := models.Transaction{
+		Amount:      50.0,
+		Description: "",
+	}
+
+	_, err := service.CreateTransaction(transaction)
+	if err == nil {
+		t.Fatal("Expected error for empty description, got nil")
+	}
+	if err.Error() != "description cannot be empty" {
+		t.Errorf("Expected error message 'description cannot be empty', got '%s'", err.Error())
+	}
+}
