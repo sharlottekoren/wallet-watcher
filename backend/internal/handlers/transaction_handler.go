@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/services"
@@ -22,29 +22,38 @@ func NewTransactionHandler(service *services.TransactionService) *TransactionHan
 // CreateTransactionHandler handles the creation of a new transaction.
 func (h *TransactionHandler) CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	var transaction models.Transaction
 
 	err := json.NewDecoder(r.Body).Decode(&transaction)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
+		err := json.NewEncoder(w).Encode(map[string]string{
 			"error": "Invalid request payload",
 		})
+		if err != nil {
+			http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+		}
 		return
 	}
 
 	createdTransaction, err := h.service.CreateTransaction(transaction)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
+		err := json.NewEncoder(w).Encode(map[string]string{
 			"error": err.Error(),
 		})
+		if err != nil {
+			http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+		}
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdTransaction)
+	err = json.NewEncoder(w).Encode(createdTransaction)
+	if err != nil {
+		http.Error(w, "Failed to encode created transaction", http.StatusInternalServerError)
+	}
 }
 
 // GetTransactionsHandler handles the retrieval of all transactions.
@@ -56,9 +65,12 @@ func (h *TransactionHandler) GetTransactionsHandler(w http.ResponseWriter, r *ht
 	err := json.NewEncoder(w).Encode(transactions)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
+		err := json.NewEncoder(w).Encode(map[string]string{
 			"error": "Failed to encode transactions",
 		})
+		if err != nil {
+			http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+		}
 		return
 	}
 }

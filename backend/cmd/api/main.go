@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"encoding/json"
 
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/handlers"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/services"
@@ -22,9 +22,12 @@ func main() {
 			transactionHandler.GetTransactionsHandler(w, r)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
-			json.NewEncoder(w).Encode(map[string]string{
+			err := json.NewEncoder(w).Encode(map[string]string{
 				"error": "Method not allowed",
 			})
+			if err != nil {
+				http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
+			}
 		}
 	})
 
