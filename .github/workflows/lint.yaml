@@ -15,8 +15,8 @@ jobs:
         with:
           version: latest
           working-directory: backend
-          skip-pkg-cache: true
-          skip-build-cache: true
+          install-mode: goinstall
+          skip-cache: true
 
   # eslint:
   #   name: Lint React
