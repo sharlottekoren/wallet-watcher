@@ -34,7 +34,14 @@ func (h *TransactionHandler) CreateTransactionHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	createdTransaction := h.service.CreateTransaction(transaction)
+	createdTransaction, err := h.service.CreateTransaction(transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdTransaction)
