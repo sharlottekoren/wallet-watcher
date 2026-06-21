@@ -29,7 +29,7 @@ func main() {
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
 	mux := http.NewServeMux()
-	
+
 	mux.HandleFunc("/transactions", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:

@@ -18,7 +18,7 @@ func (r *SQLiteTransactionRepository) Create(t models.Transaction) (models.Trans
 		INSERT INTO transactions (id, user_id, category_id, amount, transaction_type, description, created_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?);
 	`
-	
+
 	// Execute the raw SQL statement using the database driver
 	_, err := r.db.Exec(query, t.ID, t.UserID, t.CategoryID, t.Amount, t.TransactionType, t.Description, t.CreatedAt)
 	if err != nil {
@@ -41,12 +41,12 @@ func (r *SQLiteTransactionRepository) GetAll() ([]models.Transaction, error) {
 
 	for rows.Next() {
 		var t models.Transaction
-		
+
 		err := rows.Scan(&t.ID, &t.UserID, &t.CategoryID, &t.Amount, &t.TransactionType, &t.Description, &t.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
-		
+
 		transactions = append(transactions, t)
 	}
 
