@@ -4,18 +4,19 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+	"github.com/sharlottekoren/wallet-watcher/backend/internal/repository"
 	"strings"
 	"time"
 )
 
 type TransactionService struct {
-	transactions []models.Transaction
+	transactionRepo repository.TransactionRepository
 }
 
 // NewTransactionService creates a new instance of TransactionService with an empty transaction list.
-func NewTransactionService() *TransactionService {
+func NewTransactionService(repo repository.TransactionRepository) *TransactionService {
 	return &TransactionService{
-		transactions: []models.Transaction{},
+		transactionRepo: repo,
 	}
 }
 
@@ -29,16 +30,27 @@ func (s *TransactionService) CreateTransaction(transaction models.Transaction) (
 		return models.Transaction{}, errors.New("description cannot be empty")
 	}
 
+	if transaction.TransactionType != "income" && transaction.TransactionType != "expense" {
+		return models.Transaction{}, errors.New("transaction type must be either 'income' or 'expense'")
+	}
+
 	transaction.ID = uuid.New().String()
 	transaction.UserID = "user123"
 	transaction.CreatedAt = time.Now()
 
-	s.transactions = append(s.transactions, transaction)
+	_, err := s.transactionRepo.Create(transaction)
+	if err != nil {
+		return models.Transaction{}, err
+	}
 
 	return transaction, nil
 }
 
 // GetTransactions returns all transactions in the service.
-func (s *TransactionService) GetTransactions() []models.Transaction {
-	return s.transactions
+func (s *TransactionService) GetTransactions() ([]models.Transaction, error) {
+	transactions, err := s.transactionRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return transactions, nil
 }
