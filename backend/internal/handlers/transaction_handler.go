@@ -60,17 +60,20 @@ func (h *TransactionHandler) CreateTransactionHandler(w http.ResponseWriter, r *
 func (h *TransactionHandler) GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	transactions := h.service.GetTransactions()
-
-	err := json.NewEncoder(w).Encode(transactions)
+	transactions, err := h.service.GetTransactions()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		err := json.NewEncoder(w).Encode(map[string]string{
-			"error": "Failed to encode transactions",
+			"error": "Failed to retrieve transactions from database",
 		})
 		if err != nil {
 			http.Error(w, "Failed to encode error response", http.StatusInternalServerError)
 		}
 		return
+	}
+
+	err = json.NewEncoder(w).Encode(transactions)
+	if err != nil {
+		http.Error(w, "Failed to encode transactions", http.StatusInternalServerError)
 	}
 }

@@ -1,0 +1,7 @@
+# Ignore local SQLite database files
+wallet.db
+
+# Ignore any temporary SQLite journaling files
+wallet.db-journal
+wallet.db-shm
+wallet.db-wal
