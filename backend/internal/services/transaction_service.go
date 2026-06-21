@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
 	"time"
+	"strings"
 )
 
 type TransactionService struct {
@@ -20,17 +21,17 @@ func NewTransactionService() *TransactionService {
 
 // CreateTransaction creates a new transaction and adds it to the service's transaction list.
 func (s *TransactionService) CreateTransaction(transaction models.Transaction) (models.Transaction, error) {
-	transaction.ID = uuid.New().String()
-	transaction.UserID = "user123"
-	transaction.CreatedAt = time.Now()
-
 	if transaction.Amount <= 0 {
 		return models.Transaction{}, errors.New("amount must be greater than zero")
 	}
 
-	if transaction.Description == "" {
+	if strings.TrimSpace(transaction.Description) == "" {
 		return models.Transaction{}, errors.New("description cannot be empty")
 	}
+	
+	transaction.ID = uuid.New().String()
+	transaction.UserID = "user123"
+	transaction.CreatedAt = time.Now()
 
 	s.transactions = append(s.transactions, transaction)
 

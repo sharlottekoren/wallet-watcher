@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestCreateTransaction(t *testing.T) {
+func Test_CreateTransaction(t *testing.T) {
 	service := NewTransactionService()
 	transaction := models.Transaction{
 		Amount:      100.0,
@@ -30,7 +30,7 @@ func TestCreateTransaction(t *testing.T) {
 	}
 }
 
-func TestGetTransactions(t *testing.T) {
+func Test_GetTransactions(t *testing.T) {
 	service := NewTransactionService()
 
 	transaction1 := models.Transaction{
@@ -65,7 +65,7 @@ func TestGetTransactions(t *testing.T) {
 	}
 }
 
-func TestCreateTransactionInvalidAmount(t *testing.T) {
+func Test_CreateTransaction_InvalidAmount(t *testing.T) {
 	service := NewTransactionService()
 	transaction := models.Transaction{
 		Amount:      -50.0,
@@ -81,7 +81,7 @@ func TestCreateTransactionInvalidAmount(t *testing.T) {
 	}
 }
 
-func TestCreateTransactionEmptyDescription(t *testing.T) {
+func Test_CreateTransaction_EmptyDescription(t *testing.T) {
 	service := NewTransactionService()
 	transaction := models.Transaction{
 		Amount:      50.0,
