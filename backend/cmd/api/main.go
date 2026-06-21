@@ -48,7 +48,7 @@ func main() {
 	})
 
 	log.Println("Server is running on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Fatal(http.ListenAndServe(":8080", enableCORS(mux)))
 }
 
 // Helper function to initialize our database on startup
@@ -68,4 +68,26 @@ func createTables(db *sql.DB) {
 	if err != nil {
 		log.Fatalf("Failed to create tables: %v", err)
 	}
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 1. Tell the browser exactly which origin is allowed to talk to us
+		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
+
+		// 2. Specify which HTTP methods are allowed
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+
+		// 3. Allow specific headers like Content-Type (crucial for sending JSON payloads)
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// 4. Handle the Preflight OPTIONS request instantly
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		// 5. Pass the request down the chain to your actual handler logic
+		next.ServeHTTP(w, r)
+	})
 }
