@@ -1,12 +1,40 @@
 package services
 
 import (
-	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+	"database/sql"
+	"path/filepath"
 	"testing"
+
+	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
+	"github.com/sharlottekoren/wallet-watcher/backend/internal/repository"
+	_ "modernc.org/sqlite"
 )
 
+func newTestTransactionService(t *testing.T) *TransactionService {
+	t.Helper()
+
+	dbPath := filepath.Join(t.TempDir(), "transactions.db")
+	db, err := sql.Open("sqlite", dbPath)
+	if err != nil {
+		t.Fatalf("failed to open test database: %v", err)
+	}
+
+	t.Cleanup(func() {
+		if err := db.Close(); err != nil {
+			t.Fatalf("failed to close test database: %v", err)
+		}
+	})
+
+	repo, err := repository.NewSQLiteRepository(db)
+	if err != nil {
+		t.Fatalf("failed to initialize test repository: %v", err)
+	}
+
+	return NewTransactionService(repo)
+}
+
 func TestCreateTransaction(t *testing.T) {
-	service := NewTransactionService()
+	service := newTestTransactionService(t)
 	transaction := models.Transaction{
 		Amount:      100.0,
 		Description: "Test transaction",
@@ -31,7 +59,7 @@ func TestCreateTransaction(t *testing.T) {
 }
 
 func TestGetTransactions(t *testing.T) {
-	service := NewTransactionService()
+	service := newTestTransactionService(t)
 
 	transaction1 := models.Transaction{
 		Amount:      100.0,
@@ -52,7 +80,10 @@ func TestGetTransactions(t *testing.T) {
 		t.Fatalf("Expected no error, got %v", err)
 	}
 
-	transactions := service.GetTransactions()
+	transactions, err := service.GetTransactions()
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
 	if len(transactions) != 2 {
 		t.Fatalf("Expected 2 transactions, got %d", len(transactions))
@@ -66,7 +97,7 @@ func TestGetTransactions(t *testing.T) {
 }
 
 func TestCreateTransactionInvalidAmount(t *testing.T) {
-	service := NewTransactionService()
+	service := newTestTransactionService(t)
 	transaction := models.Transaction{
 		Amount:      -50.0,
 		Description: "Invalid transaction",
@@ -82,7 +113,7 @@ func TestCreateTransactionInvalidAmount(t *testing.T) {
 }
 
 func TestCreateTransactionEmptyDescription(t *testing.T) {
-	service := NewTransactionService()
+	service := newTestTransactionService(t)
 	transaction := models.Transaction{
 		Amount:      50.0,
 		Description: "",
