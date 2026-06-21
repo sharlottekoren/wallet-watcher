@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/sharlottekoren/wallet-watcher/backend/internal/models"
-	"time"
 	"strings"
+	"time"
 )
 
 type TransactionService struct {
@@ -28,7 +28,7 @@ func (s *TransactionService) CreateTransaction(transaction models.Transaction) (
 	if strings.TrimSpace(transaction.Description) == "" {
 		return models.Transaction{}, errors.New("description cannot be empty")
 	}
-	
+
 	transaction.ID = uuid.New().String()
 	transaction.UserID = "user123"
 	transaction.CreatedAt = time.Now()
